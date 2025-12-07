@@ -3,26 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website AI Ku</title>
+    <title>Project Chimera - AI Interface</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Ikon untuk avatar -->
+    <!-- Ikon untuk avatar dan UI -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>Chat dengan AI</h1>
-            <p>Tanyakan apa saja kepada AI yang menggunakan teknologi Groq!</p>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1 class="app-title">
+                    <i class="fas fa-brain"></i>
+                    Project Chimera
+                </h1>
+                <div class="header-controls">
+                    <button id="settings-btn" class="icon-btn" title="Pengaturan">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
         </header>
         
-        <main class="chat-box">
-            <div id="message-container">
-                <!-- Semua pesan akan muncul di sini -->
+        <main class="chat-container">
+            <div id="message-container" class="message-container">
+                <!-- Pesan akan dirender secara dinamis oleh JavaScript -->
             </div>
 
-            <!-- Indikator mengetik AI (awalnya tersembunyi) -->
-            <div id="typing-indicator" class="message ai-message">
+            <!-- Indikator mengetik AI -->
+            <div id="typing-indicator" class="message ai-message typing-indicator">
                 <div class="avatar">
                     <i class="fas fa-robot"></i>
                 </div>
@@ -37,9 +48,25 @@
         </main>
 
         <footer class="input-area">
-            <textarea id="user-input" placeholder="Ketik pertanyaanmu di sini..." rows="1"></textarea>
-            <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
+            <div class="input-container">
+                <textarea id="user-input" class="chat-input" placeholder="Tanyakan apa saja kepada Chimera..." rows="1"></textarea>
+                <button id="send-btn" class="send-button">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <div class="input-info">
+                <span id="status-text">Powered by Mixtral-8x7b-32768</span>
+            </div>
         </footer>
+    </div>
+
+    <!-- Modal Pengaturan (dalam versi lanjutan) -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Pengaturan</h2>
+            <p>Fitur pengaturan akan segera hadir!</p>
+        </div>
     </div>
 
     <script src="script.js"></script>
