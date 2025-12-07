@@ -31,7 +31,7 @@ const CONFIG = {
     },
     MEMORY: {
         MAX_CONTEXT_TOKENS: 120000, // Llama 3.1 405B has a 128k context, we leave some margin
-        SUMMARY_MODEL: 'llama-3.1-8b-instant', // Use a smaller, faster model for summarization
+        SUMMARY_MODEL: 'llama-3.1-405b-instruct', // Use a smaller, faster model for summarization
         SUMMARY_MAX_TOKENS: 500,
     },
     STORAGE: {
@@ -1047,3 +1047,4 @@ document.addEventListener('DOMContentLoaded', initializeApp);
 
 // End of Project Chimera X Script (FIXED)
 // ===================================================================
+
