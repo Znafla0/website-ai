@@ -1,4 +1,4 @@
-// api/chat.js — Vercel Function
+// api/chat.js — Vercel Function (proxy Groq)
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
