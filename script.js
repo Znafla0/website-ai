@@ -1,136 +1,81 @@
-/* --- Gaya Modern Dark Chat --- */
+// Dapatkan elemen-elemen HTML yang kita butuhkan
+const userInput = document.getElementById('user-input');
+const sendBtn = document.getElementById('send-btn');
+const responseArea = document.getElementById('response-area');
 
-/* Font dan Dasar */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+// --- GANTI INI DENGAN API KEY KAMU ---
+const GROQ_API_KEY = "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"; // <--- PASTEKAN API KEY MU DI SINI
 
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #1e3c72, #2a5298); /* Gradien biru gelap */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    color: #e0e0e0;
-}
+// Fungsi untuk mengirim pertanyaan ke API Groq
+async function getAIResponse(prompt) {
+    const apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
 
-/* Container Utama */
-.container {
-    background: #2c2c2e; /* Abu-abu gelap */
-    padding: 2rem;
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-    width: 90%;
-    max-width: 500px;
-    text-align: center;
-    border: 1px solid #444;
-}
+    const requestData = {
+        model: "llama3-8b-8192", // Model AI yang kita pakai, cepat dan gratis
+        messages: [
+            {
+                role: "user",
+                content: prompt
+            }
+        ]
+    };
 
-h1 {
-    color: #ffffff;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GROQ_API_KEY}`
+            },
+            body: JSON.stringify(requestData)
+        });
 
-.container > p {
-    color: #a0a0a0;
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
-}
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-/* Area Chat */
-.chat-box {
-    background: #1c1c1e; /* Lebih gelap lagi */
-    border: 1px solid #444;
-    height: 400px; /* Diperbesar sedikit */
-    overflow-y: auto;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    border-radius: 15px;
-    text-align: left;
-    font-size: 0.95rem;
-    line-height: 1.6;
+        const data = await response.json();
+        return data.choices[0].message.content;
+
+    } catch (error) {
+        console.error("Error fetching AI response:", error);
+        return "Maaf, terjadi kesalahan saat menghubungi AI.";
+    }
 }
 
-/* Gaya scrollbar untuk Chrome/Safari */
-.chat-box::-webkit-scrollbar {
-    width: 8px;
-}
-.chat-box::-webkit-scrollbar-track {
-    background: #1c1c1e;
-    border-radius: 10px;
-}
-.chat-box::-webkit-scrollbar-thumb {
-    background: #555;
-    border-radius: 10px;
-}
-.chat-box::-webkit-scrollbar-thumb:hover {
-    background: #777;
-}
+// Fungsi untuk menangani klik tombol kirim
+sendBtn.addEventListener('click', async () => {
+    const userQuestion = userInput.value.trim();
 
-#response-area p {
-    margin-bottom: 1rem;
-    animation: fadeIn 0.5s ease-in-out;
-}
+    if (userQuestion === "") {
+        alert("Silakan masukkan pertanyaan terlebih dahulu.");
+        return;
+    }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+    // Tampilkan pertanyaan user di area chat
+    responseArea.innerHTML += `<p><strong>Kamu:</strong> ${userQuestion}</p>`;
+    
+    // Kosongkan input
+    userInput.value = '';
+    
+    // Tampilkan indikator "sedang mengetik..."
+    responseArea.innerHTML += `<p><strong>AI:</strong> <em>Sedang berpikir...</em></p>`;
+    responseArea.scrollTop = responseArea.scrollHeight; // Auto scroll ke bawah
 
-strong {
-    color: #4a9eff; /* Biru terang untuk penanda "Kamu:" dan "AI:" */
-    font-weight: 600;
-}
+    // Dapatkan jawaban dari AI
+    const aiResponse = await getAIResponse(userQuestion);
 
-em {
-    color: #888;
-}
+    // Hapus indikator "sedang mengetik..." dan tampilkan jawaban asli
+    // Kita cari elemen terakhir dan ganti isinya
+    const lastMessage = responseArea.lastElementChild;
+    lastMessage.innerHTML = `<strong>AI:</strong> ${aiResponse}`;
+    
+    responseArea.scrollTop = responseArea.scrollHeight; // Auto scroll ke bawah lagi
+});
 
-/* Area Input */
-.input-area {
-    display: flex;
-    gap: 12px;
-}
-
-#user-input {
-    flex-grow: 1;
-    padding: 12px 18px;
-    border: 1px solid #444;
-    background: #1c1c1e;
-    border-radius: 25px;
-    font-size: 1rem;
-    color: #ffffff;
-    transition: all 0.2s ease-in-out;
-}
-
-#user-input:focus {
-    outline: none;
-    border-color: #4a9eff;
-    box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.2);
-}
-
-#user-input::placeholder {
-    color: #777;
-}
-
-#send-btn {
-    padding: 12px 25px;
-    border: none;
-    background: linear-gradient(135deg, #4a9eff, #007bff); /* Gradien tombol */
-    color: white;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.2s ease-in-out;
-}
-
-#send-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(74, 158, 255, 0.4);
-}
-
-#send-btn:active {
-    transform: scale(0.98);
-}
+// Biarkan user juga bisa tekan Enter untuk mengirim
+userInput.addEventListener('keyup', (event) => {
+    if (event.key === 'Enter') {
+        sendBtn.click();
+    }
+});
