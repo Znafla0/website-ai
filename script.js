@@ -1,13 +1,5 @@
 // ===================================================================
-// PROJECT CHIMERA X - MONUMENTAL AI BRAIN FRAMEWORK
-// ===================================================================
-// Author: You & GLM-4.6
-// Version: X.0
-// License: MIT
-// Description: A highly advanced, modular, and extensible AI framework.
-// Model: Llama-3.1-405b-Instruct (405 Billion Parameters)
-// Features: Advanced Memory, Tool Ecosystem, Plugin System, Command Palette, Security, Analytics, Theme Engine, and more.
-// Lines of Code: ~4500+ (Aiming for maximal complexity and features)
+// PROJECT CHIMERA X - MONUMENTAL AI BRAIN FRAMEWORK (FIXED)
 // ===================================================================
 
 'use strict';
@@ -189,7 +181,7 @@ class StateManager {
     }
 
     /**
-     * Loads the initial state from localStorage or defaults.
+     * Loads initial state from localStorage or defaults.
      * @returns {object} The initial state object.
      */
     loadInitialState() {
@@ -248,7 +240,7 @@ class StateManager {
     }
 
     /**
-     * Persists the current state to localStorage.
+     * Persists current state to localStorage.
      */
     persistState() {
         try {
@@ -303,7 +295,7 @@ class StateManager {
         // Notify all subscribers
         this.subscribers.forEach(callback => callback(this.state, action));
         
-        // Persist the new state
+        // Persist new state
         this.persistState();
     }
 
@@ -335,7 +327,7 @@ class StateManager {
     }
 
     /**
-     * Gets the current state.
+     * Gets current state.
      * @returns {object} The current application state.
      */
     getState() {
@@ -519,7 +511,7 @@ class MemoryManager {
     }
 
     /**
-     * Initializes the system prompt for the AI.
+     * Initializes system prompt for the AI.
      * @returns {object} The system prompt object.
      */
     initializeSystemPrompt() {
@@ -843,7 +835,7 @@ class UIRenderer {
     }
 
     /**
-     * Fetches AI response from the API.
+     * Fetches the AI response from the API.
      * @param {string} userMessage - The user's message.
      * @returns {Promise<object>} The AI's response.
      */
@@ -1008,21 +1000,21 @@ class UIRenderer {
 // --- [SECTION 9: INITIALIZATION & BOOTSTRAPPING] ---
 // ===================================================================
 
+// --- PERBAIKAN: Pindahkan inisialisasi ke level global ---
+const stateManager = new StateManager();
+const apiClient = new ApiClient(CONFIG.API);
+const memoryManager = new MemoryManager();
+const toolManager = new ToolManager();
+const securityManager = new SecurityManager();
+const uiRenderer = new UIRenderer();
+
 /**
  * Initializes the entire application.
  */
 function initializeApp() {
     Utils.log(LOG_LEVELS.INFO, "Initializing Project Chimera X...");
 
-    // 1. Initialize core managers
-    const stateManager = new StateManager();
-    const apiClient = new ApiClient(CONFIG.API);
-    const memoryManager = new MemoryManager();
-    const toolManager = new ToolManager();
-    const securityManager = new SecurityManager();
-    const uiRenderer = new UIRenderer();
-
-    // 2. Make managers globally accessible (or pass them down as dependencies)
+    // 1. Make managers globally accessible (or pass them down as dependencies)
     window.app = {
         stateManager,
         apiClient,
@@ -1032,10 +1024,10 @@ function initializeApp() {
         uiRenderer,
     };
 
-    // 3. Initialize conversation with system prompt
+    // 2. Initialize conversation with system prompt
     memoryManager.addMessage('system', memoryManager.systemPrompt.content);
 
-    // 4. Subscribe to state changes for side-effects
+    // 3. Subscribe to state changes for side-effects
     stateManager.subscribe((state) => {
         Utils.log(LOG_LEVELS.DEBUG, "State updated:", state);
         // Example side-effect: save user preferences when they change
@@ -1053,5 +1045,5 @@ function initializeApp() {
 
 document.addEventListener('DOMContentLoaded', initializeApp);
 
-// End of Project Chimera X Script
+// End of Project Chimera X Script (FIXED)
 // ===================================================================
