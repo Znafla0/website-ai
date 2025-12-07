@@ -11,7 +11,7 @@ async function getAIResponse(prompt) {
     const apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
 
     const requestData = {
-        model: "llama3-8b-8192", // Model AI yang kita pakai, cepat dan gratis
+        model: "llama-3.1-8b-instant", // Model AI yang kita pakai, cepat dan gratis
         messages: [
             {
                 role: "user",
@@ -79,3 +79,4 @@ userInput.addEventListener('keyup', (event) => {
         sendBtn.click();
     }
 });
+
