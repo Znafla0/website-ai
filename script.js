@@ -69,7 +69,7 @@ class ApiClient {
     constructor(config) {
         this.apiKey = config.KEY;
         this.baseUrl = config.BASE_URL || 'https://api.groq.com/openai/v1/chat/completions';
-        this.model = config.MODEL || 'mixtral-8x7b-32768';
+        this.model = config.MODEL || 'llama-3.1-405b-instruct';
         this.maxRetries = config.MAX_RETRIES || 3;
         this.retryDelay = config.RETRY_DELAY || 1000;
     }
@@ -344,3 +344,4 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("Project Chimera v5.0 initialized successfully.");
     console.log("State:", stateManager.getState());
 });
+
