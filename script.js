@@ -1,5 +1,5 @@
 // ===================================================================
-// PROJECT CHIMERA X - MONUMENTAL AI BRAIN FRAMEWORK (FIXED)
+// PROJECT CHIMERA X - MONUMENTAL AI BRAIN FRAMEWORK (FINAL VERSION)
 // ===================================================================
 
 'use strict';
@@ -15,7 +15,8 @@ const CONFIG = {
     API: {
         KEY: "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",
         BASE_URL: 'https://api.groq.com/openai/v1/chat/completions',
-        MODEL: 'llama-3.1-405b-instruct',
+        // --- PERHATIKAN BAGIAN INI: MODEL YANG SUDAH PASTI BERHASIL ---
+        MODEL: 'llama3-70b-8192', // <-- MODEL YANG SANGAT KUAT DAN STABIL
         DEFAULT_TEMPERATURE: 0.7,
         DEFAULT_MAX_TOKENS: 4096,
         MAX_RETRIES: 3,
@@ -31,7 +32,7 @@ const CONFIG = {
     },
     MEMORY: {
         MAX_CONTEXT_TOKENS: 120000, // Llama 3.1 405B has a 128k context, we leave some margin
-        SUMMARY_MODEL: 'llama-3.1-405b-instruct', // Use a smaller, faster model for summarization
+        SUMMARY_MODEL: 'llama-3.1-8b-instant', // Use a smaller, faster model for summarization
         SUMMARY_MAX_TOKENS: 500,
     },
     STORAGE: {
@@ -240,7 +241,7 @@ class StateManager {
     }
 
     /**
-     * Persists current state to localStorage.
+     * Persists the current state to localStorage.
      */
     persistState() {
         try {
@@ -327,7 +328,7 @@ class StateManager {
     }
 
     /**
-     * Gets current state.
+     * Gets the current state.
      * @returns {object} The current application state.
      */
     getState() {
@@ -433,6 +434,14 @@ class ApiClient {
                 throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
             }
 
+            const currentState = stateManager.getState();
+            stateManager.dispatch({
+                sessionMetadata: {
+                    ...currentState.sessionMetadata,
+                    totalApiCalls: currentState.sessionMetadata.totalApiCalls + 1,
+                }
+            });
+
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
             let aiResponse = '';
@@ -511,7 +520,7 @@ class MemoryManager {
     }
 
     /**
-     * Initializes system prompt for the AI.
+     * Initializes the system prompt for the AI.
      * @returns {object} The system prompt object.
      */
     initializeSystemPrompt() {
@@ -540,14 +549,17 @@ class MemoryManager {
     }
 
     /**
-     * Manages conversation history to stay within the token limit.
+     * Manages the conversation history to stay within the token limit.
      * It uses a more sophisticated strategy, keeping the system prompt and recent messages.
      * @param {Array} history - The current conversation history.
      * @returns {Array} The managed conversation history.
      */
     manageHistory(history) {
-        let currentTokens = this.estimateTokens(this.systemPrompt.content);
-        const managedHistory = [this.systemPrompt];
+        let currentTokens = 0;
+        const managedHistory = [];
+
+        managedHistory.push(this.systemPrompt);
+        currentTokens += this.estimateTokens(this.systemPrompt.content);
 
         // Iterate from the end to keep the most recent messages
         for (let i = history.length - 1; i >= 0; i--) {
@@ -790,7 +802,7 @@ class UIRenderer {
                 this.handleSendMessage();
             }
         });
-        this.elements.userInput.addEventListener('input', Utils.debounce(() => this.autoResizeTextarea(), 300));
+        this.elements.userInput.addEventListener('input', Utils.debounce(() => this.autoResizeTextarea(),300));
     }
 
     /**
@@ -878,7 +890,7 @@ class UIRenderer {
     renderMessage(sender, text, metadata = {}) {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('message');
-        messageDiv.classList.add(`${sender}-message`);
+        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'ai-message');
 
         const avatarDiv = document.createElement('div');
         avatarDiv.classList.add('avatar');
@@ -1000,21 +1012,21 @@ class UIRenderer {
 // --- [SECTION 9: INITIALIZATION & BOOTSTRAPPING] ---
 // ===================================================================
 
-// --- PERBAIKAN: Pindahkan inisialisasi ke level global ---
-const stateManager = new StateManager();
-const apiClient = new ApiClient(CONFIG.API);
-const memoryManager = new MemoryManager();
-const toolManager = new ToolManager();
-const securityManager = new SecurityManager();
-const uiRenderer = new UIRenderer();
-
 /**
  * Initializes the entire application.
  */
 function initializeApp() {
     Utils.log(LOG_LEVELS.INFO, "Initializing Project Chimera X...");
 
-    // 1. Make managers globally accessible (or pass them down as dependencies)
+    // 1. Initialize core managers
+    const stateManager = new StateManager();
+    const apiClient = new ApiClient(CONFIG.API);
+    const memoryManager = new MemoryManager();
+    const toolManager = new ToolManager();
+    const securityManager = new SecurityManager();
+    const uiRenderer = new UIRenderer();
+
+    // 2. Make managers globally accessible (or pass them down as dependencies)
     window.app = {
         stateManager,
         apiClient,
@@ -1024,10 +1036,10 @@ function initializeApp() {
         uiRenderer,
     };
 
-    // 2. Initialize conversation with system prompt
+    // 3. Initialize conversation with system prompt
     memoryManager.addMessage('system', memoryManager.systemPrompt.content);
 
-    // 3. Subscribe to state changes for side-effects
+    // 4. Subscribe to state changes for side-effects
     stateManager.subscribe((state) => {
         Utils.log(LOG_LEVELS.DEBUG, "State updated:", state);
         // Example side-effect: save user preferences when they change
@@ -1045,6 +1057,5 @@ function initializeApp() {
 
 document.addEventListener('DOMContentLoaded', initializeApp);
 
-// End of Project Chimera X Script (FIXED)
+// End of Project Chimera X Script (FINAL VERSION)
 // ===================================================================
-
