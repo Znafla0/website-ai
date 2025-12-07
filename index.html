@@ -1,191 +1,195 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI IDE Pro - Workspace Cerdas</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Studio — Chat & Image</title>
+  <meta name="description" content="Website AI modern: chat setara GPT-5 vibe dan image generation demo." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-    <div class="app-container">
-        <!-- ==================== SIDEBAR ==================== -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <i class="fas fa-code"></i>
-                    <span>AI IDE Pro</span>
-                </div>
-                <div class="sidebar-controls">
-                    <button id="new-project-btn" class="icon-btn" title="Proyek Baru"><i class="fas fa-plus"></i></button>
-                    <button id="settings-toggle-btn" class="icon-btn" title="Pengaturan"><i class="fas fa-cog"></i></button>
-                </div>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="#" class="nav-item active" data-view="chat"><i class="fas fa-comments"></i> Chat</a>
-                <a href="#" class="nav-item" data-view="editor"><i class="fas fa-code"></i> Editor</a>
-                <a href="#" class="nav-item" data-view="explorer"><i class="fas fa-folder-tree"></i> File</a>
-                <a href="#" class="nav-item" data-view="settings"><i class="fas fa-sliders-h"></i> Pengaturan</a>
-            </nav>
-        </aside>
-
-        <!-- ==================== MAIN CONTENT ==================== -->
-        <main class="main-content">
-            <!-- ==================== TOP BAR ==================== -->
-            <header class="top-bar">
-                <div class="project-info">
-                    <span id="project-name">Proyek Baru</span>
-                    <span id="project-status" class="status-dot online"></span>
-                </div>
-                <div class="top-bar-controls">
-                    <button id="command-palette-btn" class="icon-btn" title="Palet Perintah"><i class="fas fa-terminal"></i></button>
-                    <button id="split-view-btn" class="icon-btn" title="Tampilan Terpisah"><i class="fas fa-columns"></i></button>
-                    <div class="theme-selector">
-                        <select id="theme-selector">
-                            <option value="vs-code-dark">VS Code Dark</option>
-                            <option value="github-dark">GitHub Dark</option>
-                            <option value="ai-rgb">AI RGB</option>
-                            <option value="cyberpunk">Cyberpunk</option>
-                        </select>
-                    </div>
-                </div>
-            </header>
-
-            <!-- ==================== WORKSPACE ==================== -->
-            <div class="workspace">
-                <!-- ==================== CHAT VIEW ==================== -->
-                <section id="chat-view" class="view-panel active">
-                    <div class="chat-container">
-                        <div id="message-container" class="message-container"></div>
-                        <div id="typing-indicator" class="message ai-message typing-indicator">
-                            <div class="avatar"><i class="fas fa-robot"></i></div>
-                            <div class="message-content">
-                                <div class="typing-dots"><span></span><span></span><span></span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <footer class="input-area">
-                        <div class="input-container">
-                            <textarea id="user-input" class="chat-input" placeholder="Tanyakan apa saja kepada AI..." rows="1"></textarea>
-                            <button id="send-btn" class="send-button"><i class="fas fa-paper-plane"></i></button>
-                        </div>
-                        <div class="input-info">
-                            <span id="status-text">Model: <strong>Llama 3.1 70B</strong> | Status: <strong class="status-online">Online</strong></span>
-                        </div>
-                    </footer>
-                </section>
-
-                <!-- ==================== EDITOR VIEW ==================== -->
-                <section id="editor-view" class="view-panel">
-                    <div class="editor-header">
-                        <div class="editor-tabs">
-                            <div class="tab active" data-lang="javascript">script.js</div>
-                            <div class="tab" data-lang="html">index.html</div>
-                            <div class="tab" data-lang="css">style.css</div>
-                            <button class="new-tab-btn" title="Tab Baru"><i class="fas fa-plus"></i></button>
-                        </div>
-                        <div class="editor-actions">
-                            <button class="icon-btn" title="Format Kode"><i class="fas fa-magic"></i></button>
-                            <button class="icon-btn" title="Salin"><i class="fas fa-copy"></i></button>
-                            <button class="icon-btn" title="Unduh"><i class="fas fa-download"></i></button>
-                        </div>
-                    </div>
-                    <div class="editor-body">
-                        <textarea id="code-editor" class="code-editor" spellcheck="false"></textarea>
-                        <div class="line-numbers"></div>
-                    </div>
-                </section>
-
-                <!-- ==================== FILE EXPLORER VIEW ==================== -->
-                <section id="explorer-view" class="view-panel">
-                    <div class="explorer-header">
-                        <h3><i class="fas fa-folder-tree"></i> File Explorer</h3>
-                    </div>
-                    <div class="file-tree" id="file-tree">
-                        <div class="tree-node root" data-path="/">
-                            <i class="fas fa-folder-open"></i>
-                            <span>website-ai</span>
-                        </div>
-                        <div class="tree-children" id="file-children">
-                            <div class="tree-node file" data-path="/index.html">
-                                <i class="fas fa-file-code"></i>
-                                <span>index.html</span>
-                            </div>
-                            <div class="tree-node file" data-path="/style.css">
-                                <i class="fas fa-file-code"></i>
-                                <span>style.css</span>
-                            </div>
-                            <div class="tree-node file" data-path="/script.js">
-                                <i class="fas fa-file-code"></i>
-                                <span>script.js</span>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ==================== SETTINGS VIEW ==================== -->
-                <section id="settings-view" class="view-panel">
-                    <div class="settings-container">
-                        <h2><i class="fas fa-sliders-h"></i> Pengaturan</h2>
-                        <div class="settings-group">
-                            <h3>Model AI</h3>
-                            <select id="model-selector">
-                                <option value="llama-3.1-8b-instant">Llama 3.1 8B (Cepat)</option>
-                                <option value="llama-3.1-70b-versatile">Llama 3.1 70B (Seimbang)</option>
-                                <option value="mixtral-8x7b-32768">Mixtral 8x7B (Logika)</option>
-                                <option value="llama-3.1-405b-instruct">Llama 3.1 405B (Maksimal)</option>
-                            </select>
-                        </div>
-                        <div class="settings-group">
-                            <h3>Persona AI</h3>
-                            <select id="persona-selector">
-                                <option value="default">Asisten Umum</option>
-                                <option value="coder">Ahli Kode</option>
-                                <option value="writer">Penulis Kreatif</option>
-                                <option value="tutor">Tutor</option>
-                            </select>
-                        </div>
-                        <div class="settings-group">
-                            <h3>Temperatur</h3>
-                            <input type="range" id="temperature-slider" min="0" max="2" step="0.1" value="0.7">
-                            <span id="temp-value">0.7</span>
-                        </div>
-                        <div class="settings-group">
-                            <h3>Tindakan</h3>
-                            <button id="export-chat-btn" class="btn-primary"><i class="fas fa-download"></i> Ekspor Chat</button>
-                            <button id="clear-chat-btn" class="btn-secondary"><i class="fas fa-trash"></i> Hapus Chat</button>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </main>
-    </div>
-
-    <!-- ==================== MODALS ==================== -->
-    <!-- Command Palette Modal -->
-    <div id="command-palette-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Palet Perintah</h3>
-                <input type="text" id="command-input" placeholder="Ketik perintah..." autocomplete="off">
-            </div>
-            <div class="command-list" id="command-list">
-                <!-- Commands will be dynamically inserted here -->
-            </div>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">AI</div>
+        <div class="brand-text">
+          <div class="title">AI Studio</div>
+          <div class="subtitle">Chat & Image</div>
         </div>
-    </div>
+      </div>
 
-    <!-- Settings Modal (diperluasikan) -->
-    <div id="settings-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" id="settings-modal-close-btn">&times;</span>
-            <h2>Pengaturan Lanjutan</h2>
-            <p>Fitur ini akan datang segera!</p>
+      <div class="section">
+        <div class="section-title">File explorer</div>
+        <ul class="file-list" id="fileList">
+          <li class="file-item active" data-file="index.html">
+            <span class="file-icon">🗂</span> index.html
+          </li>
+          <li class="file-item" data-file="style.css">
+            <span class="file-icon">🎨</span> style.css
+          </li>
+          <li class="file-item" data-file="script.js">
+            <span class="file-icon">⚙️</span> script.js
+          </li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Pengaturan</div>
+
+        <div class="form-group">
+          <label for="modelSelect">Model</label>
+          <select id="modelSelect">
+            <option value="llama-3.1-8b-instant">Llama 3.1 8B (Cepat)</option>
+            <option value="llama-3.1-70b">Llama 3.1 70B (Seimbang)</option>
+            <option value="mixtral-8x7b">Mixtral 8x7B (Logika)</option>
+            <option value="llama-3.1-405b">Llama 3.1 405B (Maksimal)</option>
+          </select>
         </div>
-    </div>
 
-    <script src="script.js"></script>
+        <div class="form-group">
+          <label for="personaSelect">Persona AI</label>
+          <select id="personaSelect">
+            <option value="assistant">Asisten Umum</option>
+            <option value="code">Ahli Kode</option>
+            <option value="creative">Penulis Kreatif</option>
+            <option value="tutor">Tutor</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="temperatureRange">Temperatur: <span id="tempValue">0.7</span></label>
+          <input id="temperatureRange" type="range" min="0" max="1" step="0.05" value="0.7" />
+        </div>
+
+        <div class="button-row">
+          <button id="exportBtn" class="btn secondary">Ekspor Chat</button>
+          <button id="clearBtn" class="btn danger">Hapus Chat</button>
+        </div>
+
+        <div class="note">
+          Shortcut: Ctrl/⌘+K Palet perintah • Ctrl/⌘+Enter kirim • Esc bersih input
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Status</div>
+        <div class="status-row">
+          <div class="status-dot online"></div>
+          <div class="status-text">Online</div>
+        </div>
+        <div class="small">Proxy aktif menyembunyikan API key</div>
+      </div>
+
+      <footer class="sidebar-footer">
+        <div>Theme</div>
+        <div class="theme-row">
+          <button class="theme-btn" data-theme="vsc">VS Code Dark</button>
+          <button class="theme-btn" data-theme="github">GitHub Dark</button>
+          <button class="theme-btn" data-theme="cyber">AI RGB Cyberpunk</button>
+        </div>
+      </footer>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <nav class="tabs">
+          <button class="tab active" data-tab="chat">Chat</button>
+          <button class="tab" data-tab="image">Image</button>
+          <button class="tab" data-tab="notes">Notes</button>
+        </nav>
+        <div class="topbar-actions">
+          <button id="cmdPaletteBtn" class="btn ghost">⌘K</button>
+        </div>
+      </header>
+
+      <section class="panel active" id="chatPanel">
+        <div class="chat-container" id="chatContainer">
+          <!-- messages will render here -->
+        </div>
+        <div class="composer">
+          <textarea id="chatInput" rows="3" placeholder="Tulis pesan ke AI…"></textarea>
+          <div class="composer-actions">
+            <button id="attachBtn" class="btn ghost">+ Lampiran</button>
+            <div class="spacer"></div>
+            <button id="stopBtn" class="btn danger" disabled>Stop</button>
+            <button id="sendBtn" class="btn primary">Kirim ▷</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="imagePanel">
+        <div class="image-form">
+          <div class="form-group">
+            <label for="imgPrompt">Prompt gambar</label>
+            <textarea id="imgPrompt" rows="3" placeholder="Contoh: cyberpunk street at night, neon, rainy, cinematic…"></textarea>
+          </div>
+          <div class="grid">
+            <div class="form-group">
+              <label for="imgSeed">Seed</label>
+              <input id="imgSeed" type="number" min="0" max="999999" value="42" />
+            </div>
+            <div class="form-group">
+              <label for="imgSize">Ukuran</label>
+              <select id="imgSize">
+                <option value="512x512">512×512</option>
+                <option value="768x768">768×768</option>
+                <option value="1024x1024">1024×1024</option>
+              </select>
+            </div>
+          </div>
+          <div class="button-row">
+            <button id="genImgBtn" class="btn primary">Generate</button>
+            <button id="clearImgBtn" class="btn danger">Clear Gallery</button>
+          </div>
+          <div class="hint">Free demo via public image proxy. Untuk produksi, pakai layanan image API dan proxy server.</div>
+        </div>
+
+        <div class="gallery" id="gallery"></div>
+      </section>
+
+      <section class="panel" id="notesPanel">
+        <div class="notes">
+          <div class="form-group">
+            <label for="notesArea">Catatan proyek</label>
+            <textarea id="notesArea" rows="12" placeholder="Catat ide, todo, atau hasil eksperimen di sini…"></textarea>
+          </div>
+          <div class="button-row">
+            <button id="saveNotesBtn" class="btn secondary">Simpan</button>
+            <button id="clearNotesBtn" class="btn danger">Bersihkan</button>
+          </div>
+        </div>
+      </section>
+
+      <div id="cmdPalette" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div>Palet Perintah</div>
+            <button class="close-btn" id="closeCmdPalette">✕</button>
+          </div>
+          <input id="cmdInput" class="cmd-input" placeholder="Ketik perintah… (theme:cyber, persona:tutor, temp:0.3, clear, export, model:llama-3.1-70b)" />
+          <ul id="cmdList" class="cmd-list"></ul>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <template id="msgTemplate">
+    <div class="msg">
+      <div class="msg-header">
+        <div class="avatar"></div>
+        <div class="meta">
+          <div class="role"></div>
+          <div class="time"></div>
+        </div>
+      </div>
+      <div class="msg-content"></div>
+    </div>
+  </template>
+
+  <script src="script.js"></script>
 </body>
 </html>
