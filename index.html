@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI RGB - Modern Interface</title>
+    <title>AI ZNAFLA - Modern Interface</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
@@ -11,48 +11,154 @@
 <body>
 
     <div class="app-container">
-        <header class="app-header">
-            <div class="header-content">
-                <h1 class="app-title">
-                    <i class="fas fa-robot"></i>
-                    ZNAFLA AI
-                </h1>
-                <p>Tanyakan apa saja kepada ZNAFLA</p>
+        <!-- Sidebar untuk fitur masa depan -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Chimera X</h2>
+                <p>Asisten AI Super Cerdas</p>
             </div>
-        </header>
-        
-        <main class="chat-container">
-            <div id="message-container" class="message-container"></div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-view="chat"><i class="fas fa-comments"></i> Chat</a>
+                <a href="#" class="nav-item" data-view="history"><i class="fas fa-history"></i> Riwayat</a>
+                <a href="#" class="nav-item" data-view="settings"><i class="fas fa-cog"></i> Pengaturan</a>
+            </nav>
+        </aside>
 
-            <div id="typing-indicator" class="message ai-message typing-indicator">
-                <div class="avatar">
-                    <i class="fas fa-robot"></i>
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="app-header">
+                <div class="header-content">
+                    <h1 class="app-title">
+                        <i class="fas fa-brain"></i>
+                        AI RGB
+                    </h1>
+                    <div class="header-controls">
+                        <button id="clear-chat-btn" class="icon-btn" title="Hapus Chat">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button id="sidebar-toggle-btn" class="icon-btn" title="Toggle Sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="message-content">
-                    <div class="typing-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
+            </header>
+            
+            <div class="chat-wrapper">
+                <div id="message-container" class="message-container"></div>
+
+                <div id="typing-indicator" class="message ai-message typing-indicator">
+                    <div class="avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </main>
 
-        <footer class="input-area">
-            <div class="input-container">
-                <textarea id="user-input" class="chat-input" placeholder="Ketik pesanmu di sini..."></textarea>
-                <button id="send-btn" class="send-button">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+            <footer class="input-area">
+                <div class="input-container">
+                    <textarea id="user-input" class="chat-input" placeholder="Ketik pesanmu di sini..." rows="1"></textarea>
+                    <button id="send-btn" class="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="input-info">
+                    <span id="status-text">Model: <strong>Llama 3 70B</strong> | Status: <strong class="status-online">Online</strong></span>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Modal untuk Pengaturan (Contoh) -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="modal-close-btn">&times;</span>
+            <h2>Pengaturan</h2>
+            <div class="settings-group">
+                <label for="theme-select">Tema:</label>
+                <select id="theme-select">
+                    <option value="rgb-dark">RGB Gelap</option>
+                    <option value="rgb-light">RGB Terang</option>
+                    <option value="cyberpunk">Cyberpunk</option>
+                </select>
             </div>
-            <div class="input-info">
-                <span id="status-text">Powered by Mixtral-8x7b-32768</span>
+            <div class="settings-group">
+                <label>
+                    <input type="checkbox" id="streaming-toggle" checked> Aktifkan Streaming
+                </label>
             </div>
-        </footer>
+        </div>
     </div>
 
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fungsionalitas Tambahan untuk Sidebar & Modal
+            const sidebarToggle = document.getElementById('sidebar-toggle-btn');
+            const sidebar = document.getElementById('sidebar');
+            const clearChatBtn = document.getElementById('clear-chat-btn');
+            const messageContainer = document.getElementById('message-container');
+
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+
+            clearChatBtn.addEventListener('click', () => {
+                if (confirm('Apakah kamu yakin ingin menghapus seluruh percakapan?')) {
+                    // Di aplikasi nyata, ini akan memanggil fungsi dari state manager
+                    if (window.app && window.app.stateManager) {
+                        window.app.stateManager.dispatch({ type: 'ADD_MESSAGE', payload: { role: 'system', content: 'Percakapan telah dihapus.' }});
+                        window.app.stateManager.dispatch({ type: 'ADD_MESSAGE', payload: { role: 'system', content: 'Mulai percakapan baru.' }});
+                        // Kosongkan riwayat di state
+                        window.app.stateManager.state.conversation = [window.app.memoryManager.systemPrompt];
+                        // Render ulang percakapan kosong
+                        window.app.uiRenderer.renderConversation(window.app.stateManager.state.conversation);
+                    } else {
+                        messageContainer.innerHTML = '<div class="system-message">Percakapan telah dihapus.</div>';
+                    }
+                }
+            });
+
+            // Navigasi Sidebar
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                    // Logika untuk tampilan berbeda bisa ditambahkan di sini
+                    const view = item.dataset.view;
+                    console.log(`Navigasi ke view: ${view}`);
+                });
+            });
+
+            // Logika Modal (sederhana)
+            const modal = document.getElementById('settings-modal');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const settingsLinks = document.querySelectorAll('.sidebar-nav a[data-view="settings"]');
+            
+            if (settingsLinks.length > 0) {
+                settingsLinks[0].addEventListener('click', (e) => {
+                    e.preventDefault();
+                    modal.style.display = 'block';
+                });
+            }
+            
+            modalCloseBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            window.addEventListener('click', (event) => {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
-
-
