@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Chimera - AI Interface</title>
+    <title>AI RGB - Modern Interface</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
@@ -14,14 +14,10 @@
         <header class="app-header">
             <div class="header-content">
                 <h1 class="app-title">
-                    <i class="fas fa-brain"></i>
-                    Project Chimera
+                    <i class="fas fa-robot"></i>
+                    AI RGB
                 </h1>
-                <div class="header-controls">
-                    <button id="settings-btn" class="icon-btn" title="Pengaturan">
-                        <i class="fas fa-cog"></i>
-                    </button>
-                </div>
+                <p>Tanyakan apa saja kepada AI dengan tema RGB!</p>
             </div>
         </header>
         
@@ -44,7 +40,7 @@
 
         <footer class="input-area">
             <div class="input-container">
-                <textarea id="user-input" class="chat-input" placeholder="Tanyakan apa saja kepada Chimera..." rows="1"></textarea>
+                <textarea id="user-input" class="chat-input" placeholder="Ketik pesanmu di sini..." rows="1"></textarea>
                 <button id="send-btn" class="send-button">
                     <i class="fas fa-paper-plane"></i>
                 </button>
@@ -55,26 +51,6 @@
         </footer>
     </div>
 
-    <div id="settings-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" id="modal-close-btn">&times;</span>
-            <h2>Pengaturan</h2>
-            <p>Model AI: <strong>Mixtral-8x7b-32768</strong></p>
-            <p>Status: <strong>Online</strong></p>
-        </div>
-    </div>
-
     <script src="script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const settingsBtn = document.getElementById('settings-btn');
-            const modal = document.getElementById('settings-modal');
-            const closeBtn = document.getElementById('modal-close-btn');
-
-            settingsBtn.addEventListener('click', () => modal.style.display = 'block');
-            closeBtn.addEventListener('click', () => modal.style.display = 'none');
-            window.addEventListener('click', (event) => { if (event.target == modal) modal.style.display = 'none'; });
-        });
-    </script>
 </body>
 </html>
