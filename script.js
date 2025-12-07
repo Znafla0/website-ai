@@ -1,23 +1,62 @@
-// Dapatkan elemen-elemen HTML yang kita butuhkan
+// --- Elemen-Elemen HTML ---
+const messageContainer = document.getElementById('message-container');
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
-const responseArea = document.getElementById('response-area');
+const typingIndicator = document.getElementById('typing-indicator');
 
-// --- GANTI INI DENGAN API KEY KAMU ---
-const GROQ_API_KEY = "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"; // <--- PASTEKAN API KEY MU DI SINI
+// --- API Key ---
+const GROQ_API_KEY = "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";
+
+// --- Fungsi-Fungsi Helper ---
+
+// Fungsi untuk membuat elemen pesan
+function createMessageElement(sender, text) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message');
+    messageDiv.classList.add(sender === 'user' ? 'user-message' : 'ai-message');
+
+    const avatarDiv = document.createElement('div');
+    avatarDiv.classList.add('avatar');
+    avatarDiv.innerHTML = sender === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+
+    const contentDiv = document.createElement('div');
+    contentDiv.classList.add('message-content');
+    contentDiv.innerHTML = text;
+
+    messageDiv.appendChild(avatarDiv);
+    messageDiv.appendChild(contentDiv);
+
+    return messageDiv;
+}
+
+// Fungsi untuk menambahkan pesan ke container
+function addMessage(sender, text) {
+    const messageElement = createMessageElement(sender, text);
+    messageContainer.appendChild(messageElement);
+    scrollToBottom();
+}
+
+// Fungsi untuk menampilkan/menyembunyikan indikator mengetik
+function showTypingIndicator() {
+    typingIndicator.classList.add('show');
+    scrollToBottom();
+}
+
+function hideTypingIndicator() {
+    typingIndicator.classList.remove('show');
+}
+
+// Fungsi untuk auto-scroll ke bawah
+function scrollToBottom() {
+    messageContainer.parentElement.scrollTop = messageContainer.parentElement.scrollHeight;
+}
 
 // Fungsi untuk mengirim pertanyaan ke API Groq
 async function getAIResponse(prompt) {
     const apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
-
     const requestData = {
-        model: "llama-3.1-8b-instant", // Model AI yang kita pakai, cepat dan gratis
-        messages: [
-            {
-                role: "user",
-                content: prompt
-            }
-        ]
+        model: "llama-3.1-8b-instant",
+        messages: [{ role: "user", content: prompt }]
     };
 
     try {
@@ -43,40 +82,45 @@ async function getAIResponse(prompt) {
     }
 }
 
-// Fungsi untuk menangani klik tombol kirim
-sendBtn.addEventListener('click', async () => {
+// --- Event Listener ---
+
+// Fungsi utama untuk menangani pengiriman pesan
+async function handleSendMessage() {
     const userQuestion = userInput.value.trim();
 
-    if (userQuestion === "") {
-        alert("Silakan masukkan pertanyaan terlebih dahulu.");
-        return;
-    }
+    if (userQuestion === "") return;
 
-    // Tampilkan pertanyaan user di area chat
-    responseArea.innerHTML += `<p><strong>Kamu:</strong> ${userQuestion}</p>`;
+    // 1. Tambahkan pesan user
+    addMessage('user', userQuestion);
     
-    // Kosongkan input
+    // 2. Kosongkan input dan reset tingginya
     userInput.value = '';
-    
-    // Tampilkan indikator "sedang mengetik..."
-    responseArea.innerHTML += `<p><strong>AI:</strong> <em>Sedang berpikir...</em></p>`;
-    responseArea.scrollTop = responseArea.scrollHeight; // Auto scroll ke bawah
+    userInput.style.height = 'auto';
 
-    // Dapatkan jawaban dari AI
+    // 3. Tampilkan indikator mengetik
+    showTypingIndicator();
+
+    // 4. Dapatkan jawaban dari AI
     const aiResponse = await getAIResponse(userQuestion);
 
-    // Hapus indikator "sedang mengetik..." dan tampilkan jawaban asli
-    // Kita cari elemen terakhir dan ganti isinya
-    const lastMessage = responseArea.lastElementChild;
-    lastMessage.innerHTML = `<strong>AI:</strong> ${aiResponse}`;
-    
-    responseArea.scrollTop = responseArea.scrollHeight; // Auto scroll ke bawah lagi
-});
+    // 5. Sembunyikan indikator dan tampilkan jawaban
+    hideTypingIndicator();
+    addMessage('ai', aiResponse);
+}
 
-// Biarkan user juga bisa tekan Enter untuk mengirim
-userInput.addEventListener('keyup', (event) => {
-    if (event.key === 'Enter') {
-        sendBtn.click();
+// Event untuk tombol kirim
+sendBtn.addEventListener('click', handleSendMessage);
+
+// Event untuk menekan Enter
+userInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault(); // Mencegah membuat baris baru
+        handleSendMessage();
     }
 });
 
+// Auto-resize textarea
+userInput.addEventListener('input', () => {
+    userInput.style.height = 'auto'; // Reset tinggi
+    userInput.style.height = userInput.scrollHeight + 'px'; // Set tinggi baru
+});
