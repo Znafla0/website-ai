@@ -2,7 +2,7 @@
 
 export default async function handler(req, res) {
   // Set CORS headers untuk semua response
-  res.setHeader("Access-Control-Allow-Origin", "*"); // atau ganti "*" dengan domain frontend kamu
+  res.setHeader("Access-Control-Allow-Origin", "https://website-ai-nine-olive.vercel.app");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
