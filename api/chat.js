@@ -40,6 +40,8 @@ export default async function handler(req, res) {
       body = JSON.parse(raw || "{}");
     }
 
+    console.log("Incoming body:", body);
+
     // ✅ Payload ke Groq API
     const payload = {
       model: body.model || "llama-3.1-8b-instant",
@@ -47,6 +49,8 @@ export default async function handler(req, res) {
       messages: body.messages || [],
       stream: body.stream ?? false
     };
+
+    console.log("Payload to Groq:", payload);
 
     // ✅ Pastikan API key ada
     if (!process.env.GROQ_API_KEY) {
@@ -63,16 +67,21 @@ export default async function handler(req, res) {
       body: JSON.stringify(payload)
     });
 
+    console.log("Groq response status:", groqRes.status);
+
     // ✅ Kalau error dari Groq
     if (!groqRes.ok) {
       const text = await groqRes.text();
+      console.error("Groq error:", text);
       return res.status(500).json({ error: `Groq error ${groqRes.status}: ${text}` });
     }
 
     // ✅ Ambil hasil JSON
     const data = await groqRes.json();
+    console.log("Groq success:", data);
     res.status(200).json(data);
   } catch (err) {
+    console.error("Handler exception:", err);
     res.status(500).json({ error: err.message });
   }
 }
