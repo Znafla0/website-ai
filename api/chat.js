@@ -1,11 +1,19 @@
-// api/chat.js — Vercel Function
 export default async function handler(req, res) {
+  // CORS preflight
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    return res.status(200).end();
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
   try {
-    // Parse body manual
     let body = {};
     try {
       body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
