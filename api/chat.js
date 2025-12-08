@@ -1,8 +1,18 @@
 // api/chat.js
 
 export default async function handler(req, res) {
-  // ✅ CORS whitelist: hanya izinkan frontend kamu
-  res.setHeader("Access-Control-Allow-Origin", "https://website-ai-nine-olive.vercel.app");
+  // ✅ Daftar domain frontend yang diizinkan
+  const allowedOrigins = [
+    "https://website-ai-nine-olive.vercel.app",
+    "https://website-ai-git-main-znaflas-projects.vercel.app",
+    "https://website-nqeakfr0f-znaflas-projects.vercel.app"
+  ];
+
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
