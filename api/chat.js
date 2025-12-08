@@ -1,8 +1,11 @@
 export default async function handler(req, res) {
+  // Set CORS headers for all responses
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
   if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    // Preflight request
     return res.status(200).end();
   }
 
@@ -10,9 +13,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  res.setHeader("Access-Control-Allow-Origin", "*");
-
   try {
+    // parse body
     let body = {};
     try {
       body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
@@ -25,16 +27,11 @@ export default async function handler(req, res) {
       body = JSON.parse(raw || "{}");
     }
 
-    console.log("Incoming body:", body);
-
     const payload = {
       model: body.model || "llama-3.1-8b-instant",
       temperature: body.temperature ?? 0.7,
-      messages: body.messages || [],
-      stream: false
+      messages: body.messages || []
     };
-
-    console.log("Payload to Groq:", payload);
 
     const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -45,19 +42,14 @@ export default async function handler(req, res) {
       body: JSON.stringify(payload)
     });
 
-    console.log("Groq response status:", groqRes.status);
-
     if (!groqRes.ok) {
       const text = await groqRes.text();
-      console.error("Groq error:", text);
       return res.status(500).json({ error: `Groq error ${groqRes.status}: ${text}` });
     }
 
     const data = await groqRes.json();
-    console.log("Groq success:", data);
     res.status(200).json(data);
   } catch (err) {
-    console.error("Handler exception:", err);
     res.status(500).json({ error: err.message });
   }
 }
