@@ -203,7 +203,7 @@
     };
 
     // Streaming via proxy backend (/api/chat)
-    const url = '/api/chat';
+    const url = 'https://website-ai-nine-olive.vercel.app/api/chat';
     controller = new AbortController();
     stopBtn.disabled = false;
     let assistantBuffer = '';
@@ -338,3 +338,4 @@
     try { return JSON.parse(raw); } catch { return null; }
   }
 })();
+
