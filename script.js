@@ -236,6 +236,23 @@
       controller = null;
       stopBtn.disabled = true;
     }
+
+    // Tambahan: contoh fetch dengan .then chain
+    fetch("https://website-2j8829a0q-znaflas-projects.vercel.app/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "llama-3.1-8b-instant",
+        temperature: 0.7,
+        messages: [
+          { role: "system", content: "You are a helpful assistant." },
+          { role: "user", content: "Hello!" }
+        ]
+      })
+    })
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(err => console.error(err));
   }
 
   function appendMessage(role, content, ts) {
