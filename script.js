@@ -184,6 +184,9 @@
     return `${base}\n${tone}`;
   }
 
+  // IMPORTANT: Replace the placeholder value below at runtime. Do NOT commit an actual API key to source control.
+  const GROQ_API_KEY = 'YOUR_GROQ_API_KEY';
+
   async function sendMessage() {
     const content = chatInput.value.trim();
     if (!content) return;
@@ -195,64 +198,52 @@
     chatInput.value = '';
 
     const sys = { role: 'system', content: systemPersona() };
+
+    // Build payload for Groq API (no streaming)
     const payload = {
       model: settings.model,
       temperature: settings.temperature,
       messages: [sys, ...messages.filter(m => m.role !== 'system')],
-      stream: true
+      stream: false
     };
 
-    // Streaming via proxy backend (/api/chat)
-    const url = 'https://website-2j8829a0q-znaflas-projects.vercel.app/api/chat';
+    // Prepare UI for assistant response
     controller = new AbortController();
     stopBtn.disabled = false;
-    let assistantBuffer = '';
     const placeholder = appendMessage('assistant', '…', Date.now());
 
     try {
-      const res = await fetch(url, {
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${GROQ_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
         signal: controller.signal,
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder('utf-8');
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        assistantBuffer += chunk;
-        updateMessageContent(placeholder, assistantBuffer);
-      }
+      const data = await res.json();
+      // Groq's response shape is similar to OpenAI's. Try common paths.
+      const assistantContent = (data.choices && data.choices[0] && (data.choices[0].message && data.choices[0].message.content)) ||
+                               (data.choices && data.choices[0] && data.choices[0].text) ||
+                               JSON.stringify(data);
 
-      messages.push({ role: 'assistant', content: assistantBuffer, ts: Date.now() });
+      updateMessageContent(placeholder, assistantContent);
+
+      messages.push({ role: 'assistant', content: assistantContent, ts: Date.now() });
       saveJson('messages', messages);
     } catch (err) {
-      updateMessageContent(placeholder, `Maaf, terjadi error: ${err.message}`);
+      // If aborted, show a friendly message
+      const msg = err.name === 'AbortError' ? 'Dibatalkan.' : `Maaf, terjadi error: ${err.message}`;
+      updateMessageContent(placeholder, msg);
+      console.error(err);
     } finally {
       controller = null;
       stopBtn.disabled = true;
     }
-
-    // Tambahan: contoh fetch dengan .then chain
-    fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
-        temperature: 0.7,
-        messages: [
-          { role: "system", content: "You are a helpful assistant." },
-          { role: "user", content: "Hello!" }
-        ]
-      })
-    })
-    .then(res => res.json())
-    .then(data => console.log(data))
-    .catch(err => console.error(err));
   }
 
   function appendMessage(role, content, ts) {
@@ -355,6 +346,3 @@
     try { return JSON.parse(raw); } catch { return null; }
   }
 })();
-
-
-
