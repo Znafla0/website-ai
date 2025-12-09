@@ -1,7 +1,7 @@
 // api/chat.js
 
 export default async function handler(req, res) {
-  // ✅ Daftar domain frontend yang diizinkan
+  // 🟢 Domain yang diizinkan (FRONTEND)
   const allowedOrigins = [
     "https://website-ai-nine-olive.vercel.app",
     "https://website-ai-git-main-znaflas-projects.vercel.app",
@@ -9,25 +9,31 @@ export default async function handler(req, res) {
   ];
 
   const origin = req.headers.origin;
+
+  // 🟢 IZINKAN FRONTEND MENGAKSES API
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
+  } else {
+    // Default: tolak domain asing (aman)
+    res.setHeader("Access-Control-Allow-Origin", "null");
   }
 
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Max-Age", "86400"); // cache preflight 1 hari
 
-  // ✅ Handle preflight request (OPTIONS)
+  // 🟢 Jawab permintaan OPTIONS (WAJIB supaya tidak CORS)
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  // ✅ Hanya izinkan POST
+  // 🟢 Hanya izinkan POST
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    // ✅ Parsing body aman
+    // 🟢 Parsing body
     let body = {};
     try {
       body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
@@ -40,9 +46,7 @@ export default async function handler(req, res) {
       body = JSON.parse(raw || "{}");
     }
 
-    console.log("Incoming body:", body);
-
-    // ✅ Payload ke Groq API
+    // 🟢 Buat payload untuk GROQ
     const payload = {
       model: body.model || "llama-3.1-8b-instant",
       temperature: body.temperature ?? 0.7,
@@ -50,14 +54,12 @@ export default async function handler(req, res) {
       stream: body.stream ?? false
     };
 
-    console.log("Payload to Groq:", payload);
-
-    // ✅ Pastikan API key ada
+    // 🟢 Pastikan API Key ada
     if (!process.env.GROQ_API_KEY) {
       return res.status(500).json({ error: "Missing GROQ_API_KEY in environment variables" });
     }
 
-    // ✅ Panggil Groq API
+    // 🟢 Panggil GROQ API
     const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -67,21 +69,15 @@ export default async function handler(req, res) {
       body: JSON.stringify(payload)
     });
 
-    console.log("Groq response status:", groqRes.status);
-
-    // ✅ Kalau error dari Groq
     if (!groqRes.ok) {
       const text = await groqRes.text();
-      console.error("Groq error:", text);
       return res.status(500).json({ error: `Groq error ${groqRes.status}: ${text}` });
     }
 
-    // ✅ Ambil hasil JSON
     const data = await groqRes.json();
-    console.log("Groq success:", data);
     res.status(200).json(data);
+
   } catch (err) {
-    console.error("Handler exception:", err);
     res.status(500).json({ error: err.message });
   }
 }
