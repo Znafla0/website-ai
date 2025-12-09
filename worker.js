@@ -1,5 +1,14 @@
-// api/chat.js — Vercel Function (proxy Groq)
 export default async function handler(req, res) {
+  // Tambahkan CORS header
+  res.setHeader("Access-Control-Allow-Origin", "https://website-ai-nine-olive.vercel.app");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // Handle preflight
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -24,12 +33,15 @@ export default async function handler(req, res) {
     });
 
     if (!groqRes.ok) {
-      return res.status(500).json({ error: `Groq error ${groqRes.status}` });
+      const text = await groqRes.text();
+      return res.status(500).json({ error: `Groq error ${groqRes.status}: ${text}` });
     }
 
-    // Stream response ke client
-    res.setHeader("Content-Type", "text/plain; charset=utf-8");
-    groqRes.body.pipe(res);
+    // Stream response ke client (fallback kalau pipe error)
+    res.setHeader("Content-Type", "application/json");
+    const data = await groqRes.json();
+    res.status(200).json(data);
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
