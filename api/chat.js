@@ -5,7 +5,9 @@ export default async function handler(req, res) {
   const allowedOrigins = [
     "https://website-ai-nine-olive.vercel.app",
     "https://website-ai-git-main-znaflas-projects.vercel.app",
-    "https://website-nqeakfr0f-znaflas-projects.vercel.app"
+    "https://website-nqeakfr0f-znaflas-projects.vercel.app",
+    "https://website-2j8829a0q-znaflas-projects.vercel.app",
+    // kalau ada domain lain yang muncul di error, tambahkan di sini juga
   ];
 
   const origin = req.headers.origin;
@@ -14,9 +16,12 @@ export default async function handler(req, res) {
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   } else {
-    // Default: tolak domain asing (aman)
+    // kalau mau lebih ketat bisa tolak, tapi untuk debug bisa set jadi "null"
     res.setHeader("Access-Control-Allow-Origin", "null");
   }
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Max-Age", "86400"); // cache jawaban preflight 1 hari
 
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
