@@ -238,7 +238,7 @@
     }
 
     // Tambahan: contoh fetch dengan .then chain
-    fetch("https://website-2j8829a0q-znaflas-projects.vercel.app/api/chat", {
+    fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -355,5 +355,6 @@
     try { return JSON.parse(raw); } catch { return null; }
   }
 })();
+
 
 
